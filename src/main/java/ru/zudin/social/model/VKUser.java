@@ -34,6 +34,11 @@ public class VKUser implements SocialUser {
     public String livejournal;
 
     @Override
+    public long getId() {
+        return userId;
+    }
+
+    @Override
     public List<String> getNames() {
         List<String> strings = Arrays.asList(livejournal, instagram, twitter, facebookName, skype,
                 domain, firstName + " " + lastName, nickname);

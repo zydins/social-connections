@@ -39,6 +39,11 @@ public class TwitterUser implements SocialUser {
     }
 
     @Override
+    public long getId() {
+        return userId;
+    }
+
+    @Override
     public List<String> getNames() {
         List<String> strings = Arrays.asList(nickname, otherNickname, name, info);
         return strings.stream()

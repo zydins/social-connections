@@ -10,6 +10,8 @@ import java.util.List;
  */
 public interface SocialUser extends Writable {
 
+    long getId();
+
     List<String> getNames();
 
     String getEntityName();

@@ -1,7 +1,9 @@
 package ru.zudin.social.util;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author sergey
@@ -37,6 +39,16 @@ public class HashUtils {
             result.add(phrase);
         }
         return result;
+    }
+
+    public static Set<String> continiousShingling(String string, int limit) {
+        int length = string.length();
+        Set<String> shingles = new HashSet<>();
+        while (--length >= limit) {
+            List<String> shingling = shingling(string, length);
+            shingles.addAll(shingling);
+        }
+        return shingles;
     }
 
 }
