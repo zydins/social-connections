@@ -63,7 +63,7 @@ public class TwitterParser implements SocialParser {
     private BiFunction<Long, Long, PagableResponseList<User>> getSafeFollowing() {
         return (l1, l2) -> {
             try {
-                return twitter.friendsFollowers().getFriendsList(l1,l2);
+                return twitter.friendsFollowers().getFriendsList(l1, l2);
             } catch (TwitterException e) {
                 return null;
             }
@@ -99,10 +99,15 @@ public class TwitterParser implements SocialParser {
         return twitterUser;
     }
 
+    public long getId(String username) throws TwitterException {
+        User user = twitter.users().showUser("zydins");
+        return user.getId();
+    }
+
     public static void main(String[] args) throws TwitterException, IOException {
         TwitterParser twitterParser = new TwitterParser();
-        User user = twitterParser.twitter.users().showUser("zydins");
-        List<TwitterUser> users = twitterParser.parse(user.getId(), 0);
+        long id = twitterParser.getId("zydins");
+        List<TwitterUser> users = twitterParser.parse(id, 0);
         System.out.println(users);
     }
 }
