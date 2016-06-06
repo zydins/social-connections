@@ -15,7 +15,7 @@ public class HashUtils {
         int length = string.length();
         List<Integer> hashes = new ArrayList<>();
         hashes.add(string.hashCode());
-        while (--length >= 5) {
+        while (--length >= 6) {
             List<String> shingling = shingling(string, length);
             shingling.stream()
                     .map(String::hashCode)
@@ -28,12 +28,11 @@ public class HashUtils {
         if (k < 1) {
             throw new IllegalArgumentException("k cannot be less than 1");
         }
-        String[] split = string.split(" ");
         List<String> result = new ArrayList<>();
-        for (int i = 0; i < split.length + 1 - k; i++) {
+        for (int i = 0; i < string.length() + 1 - k; i++) {
             StringBuilder builder = new StringBuilder();
             for (int j = 0; j < k; j++) {
-                builder.append(split[i + j]).append(" ");
+                builder.append(string.charAt(i + j));
             }
             String phrase = builder.toString().trim();
             result.add(phrase);

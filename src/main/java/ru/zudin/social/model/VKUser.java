@@ -1,18 +1,11 @@
 package ru.zudin.social.model;
 
-import org.apache.hadoop.io.Text;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static ru.zudin.social.util.EntityUtils.readProperty;
-import static ru.zudin.social.util.EntityUtils.writeProperty;
 
 /**
  * @author sergey
@@ -34,59 +27,30 @@ public class VKUser implements SocialUser {
     public String livejournal;
 
     @Override
-    public long getId() {
+    public long getUserId() {
         return userId;
     }
 
     @Override
+    @JsonIgnore
     public List<String> getNames() {
         List<String> strings = Arrays.asList(livejournal, instagram, twitter, facebookName, skype,
                 domain, firstName + " " + lastName, nickname);
         return strings.stream()
+                .filter(s -> s != null)
                 .distinct()
                 .collect(toList());
     }
 
     @Override
+    @JsonIgnore
     public String getEntityName() {
         return "VK";
     }
 
     @Override
-    public void write(DataOutput out) throws IOException {
-        out.writeInt(userId);
-        writeProperty(out, firstName);
-        writeProperty(out, lastName);
-        writeProperty(out, domain);
-        writeProperty(out, nickname);
-        writeProperty(out, skype);
-        writeProperty(out, facebook);
-        writeProperty(out, facebookName);
-        writeProperty(out, twitter);
-        writeProperty(out, instagram);
-        writeProperty(out, livejournal);
+    public String getSocialName() {
+        return firstName + " " + lastName;
     }
 
-    
-
-    @Override
-    public void readFields(DataInput in) throws IOException, IllegalStateException {
-        try {
-            userId = in.readInt();
-            readProperty(in, "firstName", this);
-            readProperty(in, "lastName", this);
-            readProperty(in, "domain", this);
-            readProperty(in, "nickname", this);
-            readProperty(in, "skype", this);
-            readProperty(in, "facebook", this);
-            readProperty(in, "facebookName", this);
-            readProperty(in, "twitter", this);
-            readProperty(in, "instagram", this);
-            readProperty(in, "livejournal", this);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    
 }

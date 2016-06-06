@@ -49,6 +49,11 @@
             <artifactId>typetools</artifactId>
             <version>0.4.0</version>
         </dependency>
+        <dependency>
+            <groupId>ru.zudin</groupId>
+            <artifactId>chaining-job</artifactId>
+            <version>0.2.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -86,4 +91,15 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>chaining-job-mvn-repo</id>
+            <url>https://raw.github.com/zydins/chaining-job/mvn-repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>

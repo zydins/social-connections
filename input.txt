@@ -1,1 +1,2 @@
-VK:32030584 Twitter:zydins  Depth:0
+VK:32030584:0
+Twitter:zydins:0

@@ -1,6 +1,5 @@
 package ru.zudin.social.model;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,7 +11,6 @@ public class TokenizedUser {
 
     public SocialUser user;
     public Map<String, Set<String>> tokens;
-
 
     public TokenizedUser(SocialUser user, Map<String, Set<String>> tokens) {
         this.user = user;
