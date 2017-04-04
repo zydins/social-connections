@@ -5,7 +5,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 import ru.zudin.social.model.SocialUser;
 import ru.zudin.social.model.TokenizedUser;
-import ru.zudin.social.util.CommonUtils;
+import ru.zudin.social.util.ParseHelper;
 import ru.zudin.social.util.HashUtils;
 
 import java.io.IOException;
@@ -21,6 +21,12 @@ import static java.util.stream.Collectors.toList;
  */
 public class UserMatchReducer extends Reducer<LongWritable, Text, Text, Text> {
 
+    private final ParseHelper parseHelper;
+
+    public UserMatchReducer() {
+        parseHelper = new ParseHelper();
+    }
+
     @Override
     protected void reduce(LongWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
         List<String> texts = new ArrayList<>();
@@ -31,7 +37,7 @@ public class UserMatchReducer extends Reducer<LongWritable, Text, Text, Text> {
         }
 
         List<SocialUser> users = texts.stream()
-                .map(CommonUtils::readUser)
+                .map(parseHelper::readUser)
                 .filter(u -> u != null)
                 .collect(toList());
         Map<String, List<SocialUser>> collect = users.stream().collect(Collectors.groupingBy(SocialUser::getEntityName));
@@ -84,7 +90,7 @@ public class UserMatchReducer extends Reducer<LongWritable, Text, Text, Text> {
 
     private TokenizedUser getTokenized(SocialUser u) {
         Map<String, Set<String>> collect = u.getNames().stream()
-                .collect(Collectors.toMap(Function.<String>identity(), s -> HashUtils.continiousShingling(s, 6)));
+                .collect(Collectors.toMap(Function.<String>identity(), s -> HashUtils.continuousShingling(s, 6)));
         return new TokenizedUser(u, collect);
     }
 }

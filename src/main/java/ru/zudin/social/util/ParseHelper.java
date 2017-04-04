@@ -11,11 +11,19 @@ import java.io.IOException;
  * @author sergey
  * @since 06.06.16
  */
-public class CommonUtils {
+public class ParseHelper {
 
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper;
 
-    public static SocialUser readUser(String value) {
+    public ParseHelper() {
+        this(new ObjectMapper());
+    }
+
+    public ParseHelper(ObjectMapper mapper) {
+        this.mapper = mapper;
+    }
+
+    public SocialUser readUser(String value) {
         try {
             String[] split = value.split("\t");
             switch (split[0]) {

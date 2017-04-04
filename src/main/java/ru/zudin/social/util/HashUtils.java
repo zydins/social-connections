@@ -40,7 +40,7 @@ public class HashUtils {
         return result;
     }
 
-    public static Set<String> continiousShingling(String string, int limit) {
+    public static Set<String> continuousShingling(String string, int limit) {
         int length = string.length();
         Set<String> shingles = new HashSet<>();
         while (--length >= limit) {

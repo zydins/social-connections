@@ -4,7 +4,7 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import ru.zudin.social.model.SocialUser;
-import ru.zudin.social.util.CommonUtils;
+import ru.zudin.social.util.ParseHelper;
 import ru.zudin.social.util.HashUtils;
 
 import java.io.IOException;
@@ -19,10 +19,16 @@ import static java.util.stream.Collectors.toList;
  */
 public class HashMapper extends Mapper<LongWritable, Text, LongWritable, Text> {
 
+    private final ParseHelper parseHelper;
+
+    public HashMapper() {
+        this.parseHelper = new ParseHelper();
+    }
+
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         String string = value.toString();
-        SocialUser user = CommonUtils.readUser(string);
+        SocialUser user = parseHelper.readUser(string);
         if (user == null) {
             return;
         }
