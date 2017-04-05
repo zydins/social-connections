@@ -1,5 +1,7 @@
 package ru.zudin.social.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 
 /**
@@ -8,6 +10,7 @@ import java.util.List;
  */
 public interface SocialUser {
 
+    @JsonIgnore
     default String getGlobalId() {
         String entityName = getEntityName();
         int end = Math.min(3, entityName.length());

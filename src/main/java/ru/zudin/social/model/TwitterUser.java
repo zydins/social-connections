@@ -55,12 +55,10 @@ public class TwitterUser implements SocialUser {
         return "Twitter";
     }
 
+    @JsonIgnore
     @Override
     public String getSocialName() {
         return nickname;
     }
 
-    public void setSocialName(String nickname) {
-        this.nickname = nickname;
-    }
 }

@@ -48,6 +48,7 @@ public class VKUser implements SocialUser {
         return "VK";
     }
 
+    @JsonIgnore
     @Override
     public String getSocialName() {
         return firstName + " " + lastName;
