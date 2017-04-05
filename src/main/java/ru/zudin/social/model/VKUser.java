@@ -27,8 +27,8 @@ public class VKUser implements SocialUser {
     public String livejournal;
 
     @Override
-    public long getUserId() {
-        return userId;
+    public String getUserId() {
+        return Long.toString(userId);
     }
 
     @Override

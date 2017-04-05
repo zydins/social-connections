@@ -26,11 +26,11 @@ public class ParseHelper {
     public SocialUser readUser(String value) {
         try {
             String[] split = value.split("\t");
-            switch (split[0]) {
+            switch (split[1]) {
                 case "VK":
-                    return mapper.readValue(split[1], VKUser.class);
+                    return mapper.readValue(split[2], VKUser.class);
                 case "Twitter":
-                    return mapper.readValue(split[1], TwitterUser.class);
+                    return mapper.readValue(split[2], TwitterUser.class);
                 default:
                     return null;
             }

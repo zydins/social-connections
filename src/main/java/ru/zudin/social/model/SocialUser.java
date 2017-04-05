@@ -8,7 +8,14 @@ import java.util.List;
  */
 public interface SocialUser {
 
-    long getUserId();
+    default String getGlobalId() {
+        String entityName = getEntityName();
+        int end = Math.min(3, entityName.length());
+        String prefix = entityName.substring(0, end).toLowerCase();
+        return prefix + getUserId();
+    }
+
+    String getUserId();
 
     List<String> getNames();
 

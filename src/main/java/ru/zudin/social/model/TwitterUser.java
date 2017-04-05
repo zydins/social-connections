@@ -35,8 +35,8 @@ public class TwitterUser implements SocialUser {
     }
 
     @Override
-    public long getUserId() {
-        return userId;
+    public String getUserId() {
+        return Long.toString(userId);
     }
 
     @Override
@@ -60,4 +60,7 @@ public class TwitterUser implements SocialUser {
         return nickname;
     }
 
+    public void setSocialName(String nickname) {
+        this.nickname = nickname;
+    }
 }
