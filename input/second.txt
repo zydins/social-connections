@@ -290,3 +290,14 @@ Twitter	{"userId":472991825,"name":"Alexander Balaban","nickname":"yabalaban","i
 Twitter	{"userId":432618722,"name":"Овсянников Георгий","nickname":"go_ovsyannikov","info":"тын тын","url":"","otherNickname":null}
 Twitter	{"userId":257620838,"name":"месье паливодá","nickname":"wgalaev","info":"пеки булки","url":"http://vk.com/antongalaev","otherNickname":"antongalaev"}
 Twitter	{"userId":223807748,"name":"Sergey Zudin","nickname":"zudins","info":"Щедр как кедр","url":"","otherNickname":null}
+Twitter	{"userId":86802853,"name":"kamikadze_d","nickname":"kamikadze_d","info":"СМИ. 18+. Юрист, ведущий, продюсер, видео по ссылкам в твитах","url":"http://www.youtube.com/user/kamikadzedead","otherNickname":"userkamikadzedead","socialName":"kamikadze_d"}
+Twitter	{"userId":151828663,"name":"Irina","nickname":"Vinograaadinka","info":"","url":"","otherNickname":null,"socialName":"Vinograaadinka"}
+Twitter	{"userId":96550748,"name":"Insaf Latypov","nickname":"Saferif","info":"","url":"","otherNickname":null,"socialName":"Saferif"}
+Twitter	{"userId":972517986,"name":"Виктор Петров","nickname":"liberman94","info":"","url":"","otherNickname":null,"socialName":"liberman94"}
+Twitter	{"userId":341735102,"name":"Ira Agapova","nickname":"IraAgapova","info":"Политолог) Люблю музыку, кино и путешествия))","url":"","otherNickname":null,"socialName":"IraAgapova"}
+Twitter	{"userId":143771235,"name":"Olga","nickname":"HelDest","info":"No, no, no! Put an end to the show.","url":"","otherNickname":null,"socialName":"HelDest"}
+Twitter	{"userId":2193764112,"name":"Елена Овчинникова","nickname":"elenochkaov","info":"учусь на экономиста,люблю читать,обожаю свою сестренку,айсекер, главн.редактор газет Эконом)","url":"","otherNickname":null,"socialName":"elenochkaov"}
+Twitter	{"userId":1172485303,"name":"Ulyana Potapova","nickname":"UlyanaPotapova","info":"","url":"http://vk.com/uli_muli93","otherNickname":"uli_muli93","socialName":"UlyanaPotapova"}
+Twitter	{"userId":486589738,"name":"Nina Atutina","nickname":"ninka_malina","info":"","url":"","otherNickname":null,"socialName":"ninka_malina"}
+Twitter	{"userId":2848813019,"name":"Pavel Kozemirov","nickname":"pkozemirov","info":"Диванный эксперт","url":"","otherNickname":null,"socialName":"pkozemirov"}
+

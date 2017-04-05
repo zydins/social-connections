@@ -13,6 +13,7 @@ import ru.zudin.social.parse.VKParser;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author sergey
@@ -39,7 +40,12 @@ public class EntityMapper extends Mapper<LongWritable, Text, Text, Text> {
                 String userName = values[1];
                 TwitterParser twitterParser = new TwitterParser();
                 parser = twitterParser;
-                userId = twitterParser.getId(userName);
+                Optional<Long> id = twitterParser.getId(userName);
+                if (!id.isPresent()) {
+                    logger.warn("Found invalid user '{}'", userName);
+                    return;
+                }
+                userId = id.get();
                 depth = Integer.parseInt(values[2]);
             }
             if (parser == null || depth < 0 || userId <= 0) {
