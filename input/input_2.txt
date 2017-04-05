@@ -300,4 +300,3 @@ twi2193764112	Twitter	{"userId":"2193764112","name":"Елена Овчинник
 twi1172485303	Twitter	{"userId":"1172485303","name":"Ulyana Potapova","nickname":"UlyanaPotapova","info":"","url":"http://vk.com/uli_muli93","otherNickname":"uli_muli93","socialName":"UlyanaPotapova","globalId":"twi1172485303"}
 twi486589738	Twitter	{"userId":"486589738","name":"Nina Atutina","nickname":"ninka_malina","info":"","url":"","otherNickname":null,"socialName":"ninka_malina","globalId":"twi486589738"}
 twi2848813019	Twitter	{"userId":"2848813019","name":"Pavel Kozemirov","nickname":"pkozemirov","info":"Диванный эксперт","url":"","otherNickname":null,"socialName":"pkozemirov","globalId":"twi2848813019"}
-twi375002013	Twitter	{"userId":"375002013","name":"Барболин","nickname":"zydins","info":"Сомнения и бытие","url":"","otherNickname":null}
