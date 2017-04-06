@@ -61,4 +61,18 @@ public class TwitterUser implements SocialUser {
         return nickname;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TwitterUser that = (TwitterUser) o;
+
+        return userId == that.userId;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (userId ^ (userId >>> 32));
+    }
 }

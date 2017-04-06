@@ -3,10 +3,11 @@ package ru.zudin.social.mr;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 import ru.zudin.social.model.SocialUser;
 import ru.zudin.social.model.TokenizedUser;
-import ru.zudin.social.util.ParseHelper;
 import ru.zudin.social.util.HashUtils;
+import ru.zudin.social.util.ParseHelper;
 
 import java.io.IOException;
 import java.util.*;
@@ -21,10 +22,21 @@ import static java.util.stream.Collectors.toList;
  */
 public class UserMatchReducer extends Reducer<LongWritable, Text, Text, Text> {
 
+    private MultipleOutputs<Text, Text> multipleOutputs;
     private final ParseHelper parseHelper;
 
     public UserMatchReducer() {
         parseHelper = new ParseHelper();
+    }
+
+    @Override
+    public void setup(Context context){
+        multipleOutputs = new MultipleOutputs<>(context);
+    }
+
+    @Override
+    public void cleanup(final Context context) throws IOException, InterruptedException{
+        multipleOutputs.close();
     }
 
     @Override
@@ -40,7 +52,8 @@ public class UserMatchReducer extends Reducer<LongWritable, Text, Text, Text> {
                 .map(parseHelper::readUser)
                 .filter(u -> u != null)
                 .collect(toList());
-        Map<String, List<SocialUser>> collect = users.stream().collect(Collectors.groupingBy(SocialUser::getEntityName));
+        Map<String, Set<SocialUser>> collect = users.stream()
+                .collect(Collectors.groupingBy(SocialUser::getEntityName, Collectors.toSet()));
         if (collect.size() > 1) {
             List<List<TokenizedUser>> lists = collect.values().stream()
                     .map(l -> l.stream()
@@ -58,15 +71,19 @@ public class UserMatchReducer extends Reducer<LongWritable, Text, Text, Text> {
                             Map<String, Set<String>> firstTokens = tokenizedUser.tokens;
                             Map<String, Set<String>> secondTokens = otherUser.tokens;
                             for (String name : firstTokens.keySet()) {
-                                Set<String> firstStrings = firstTokens.get(name);
                                 for (String name2 : secondTokens.keySet()) {
-                                    Set<String> secondStrings = secondTokens.get(name2);
-                                    for (String string : firstStrings) {
-                                        if (secondStrings.contains(string)) {
-                                            double newProb = ((double) string.length() / name.length()) *
-                                                    ((double) string.length() / name2.length());
-                                            if (newProb > probability) {
-                                                probability = newProb;
+                                    if (name.equals(name2)) {
+                                        probability = 1.0;
+                                    } else {
+                                        Set<String> firstStrings = firstTokens.get(name);
+                                        Set<String> secondStrings = secondTokens.get(name2);
+                                        for (String string : firstStrings) {
+                                            if (secondStrings.contains(string)) {
+                                                double newProb = ((double) string.length() / name.length()) *
+                                                        ((double) string.length() / name2.length());
+                                                if (newProb > probability) {
+                                                    probability = newProb;
+                                                }
                                             }
                                         }
                                     }
@@ -78,7 +95,8 @@ public class UserMatchReducer extends Reducer<LongWritable, Text, Text, Text> {
                                         otherUser.user.getEntityName() + ":" + otherUser.user.getUserId() + ":" +
                                         otherUser.user.getSocialName();
                                 String contextValue = "Probability:" + String.format("%.4f", probability);
-                                context.write(new Text(contextKey), new Text(contextValue));
+                                multipleOutputs.write(new Text(contextKey), new Text(contextValue), tokenizedUser.user.getGlobalId());
+                                multipleOutputs.write(new Text(contextKey), new Text(contextValue), otherUser.user.getGlobalId());
                             }
                         }
                     }

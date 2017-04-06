@@ -8,6 +8,8 @@ import ru.zudin.ChainingJob;
 import ru.zudin.social.mr.HashMapper;
 import ru.zudin.social.mr.UserMatchReducer;
 
+import java.util.Collections;
+
 /**
  * @author sergey
  * @since 30.05.16
@@ -24,10 +26,10 @@ public class Executor {
                 .tempDir("temp")
 //                .mapper(EntityMapper.class)
                 .mapper(HashMapper.class)
-                .reducer(UserMatchReducer.class)
+                .reducer(UserMatchReducer.class, Collections.singletonMap("-M", "true"))
                 .build();
 
-        ToolRunner.run(new Configuration(), job, new String[]{"input/second.txt", "output"});
+        ToolRunner.run(new Configuration(), job, new String[]{"input/users.txt", "output"});
 
 
 

@@ -54,4 +54,18 @@ public class VKUser implements SocialUser {
         return firstName + " " + lastName;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        VKUser vkUser = (VKUser) o;
+
+        return userId == vkUser.userId;
+    }
+
+    @Override
+    public int hashCode() {
+        return userId;
+    }
 }
