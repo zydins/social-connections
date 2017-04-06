@@ -6,7 +6,9 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.ToolRunner;
 import ru.zudin.ChainingJob;
 import ru.zudin.social.mr.HashMapper;
+import ru.zudin.social.mr.UserCollectReducer;
 import ru.zudin.social.mr.UserMatchReducer;
+import ru.zudin.social.mr.UserPairMapper;
 
 import java.util.Collections;
 
@@ -26,7 +28,10 @@ public class Executor {
                 .tempDir("temp")
 //                .mapper(EntityMapper.class)
                 .mapper(HashMapper.class)
-                .reducer(UserMatchReducer.class, Collections.singletonMap("-M", "true"))
+//                .reducer(UserMatchReducer.class, Collections.singletonMap("-M", "true"))
+                .reducer(UserMatchReducer.class)
+                .mapper(UserPairMapper.class)
+                .reducer(UserCollectReducer.class, Collections.singletonMap("-M", "true"))
                 .build();
 
         ToolRunner.run(new Configuration(), job, new String[]{"input/users.txt", "output"});

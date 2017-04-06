@@ -3,7 +3,6 @@ package ru.zudin.social.mr;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 import ru.zudin.social.model.SocialUser;
 import ru.zudin.social.model.TokenizedUser;
 import ru.zudin.social.util.HashUtils;
@@ -22,21 +21,10 @@ import static java.util.stream.Collectors.toList;
  */
 public class UserMatchReducer extends Reducer<LongWritable, Text, Text, Text> {
 
-    private MultipleOutputs<Text, Text> multipleOutputs;
     private final ParseHelper parseHelper;
 
     public UserMatchReducer() {
         parseHelper = new ParseHelper();
-    }
-
-    @Override
-    public void setup(Context context){
-        multipleOutputs = new MultipleOutputs<>(context);
-    }
-
-    @Override
-    public void cleanup(final Context context) throws IOException, InterruptedException{
-        multipleOutputs.close();
     }
 
     @Override
@@ -90,13 +78,12 @@ public class UserMatchReducer extends Reducer<LongWritable, Text, Text, Text> {
                                 }
                             }
                             if (probability > 0.0) {
-                                String contextKey = tokenizedUser.user.getEntityName() + ":" + tokenizedUser.user.getUserId()
-                                        + ":" + tokenizedUser.user.getSocialName() + "\t" +
-                                        otherUser.user.getEntityName() + ":" + otherUser.user.getUserId() + ":" +
-                                        otherUser.user.getSocialName();
-                                String contextValue = "Probability:" + String.format("%.4f", probability);
-                                multipleOutputs.write(new Text(contextKey), new Text(contextValue), tokenizedUser.user.getGlobalId());
-                                multipleOutputs.write(new Text(contextKey), new Text(contextValue), otherUser.user.getGlobalId());
+                                String contextKey = tokenizedUser.user.getGlobalId() + "\t" +
+                                        otherUser.user.getGlobalId();
+                                String contextValue = String.format("%.4f", probability);
+                                context.write(new Text(contextKey), new Text(contextValue));
+//                                multipleOutputs.write(new Text(contextKey), new Text(contextValue), tokenizedUser.user.getGlobalId());
+//                                multipleOutputs.write(new Text(contextKey), new Text(contextValue), otherUser.user.getGlobalId());
                             }
                         }
                     }
