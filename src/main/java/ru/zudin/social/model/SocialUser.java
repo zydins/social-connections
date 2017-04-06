@@ -12,17 +12,17 @@ public interface SocialUser {
 
     @JsonIgnore
     default String getGlobalId() {
-        String entityName = getEntityName();
-        int end = Math.min(3, entityName.length());
-        String prefix = entityName.substring(0, end).toLowerCase();
+        SocialNetwork entityName = getEntityName();
+        int end = Math.min(3, entityName.name().length());
+        String prefix = entityName.name().substring(0, end).toLowerCase();
         return prefix + getUserId();
     }
 
     String getUserId();
 
-    List<String> getNames();
+    List<SocialName> getNames();
 
-    String getEntityName();
+    SocialNetwork getEntityName();
 
     String getSocialName();
 

@@ -55,7 +55,7 @@ public class EntityMapper extends Mapper<LongWritable, Text, Text, Text> {
             List<? extends SocialUser> users = parser.parse(userId, depth);
             ObjectMapper mapper = new ObjectMapper();
             for (SocialUser user : users) {
-                context.write(new Text(user.getEntityName()), new Text(mapper.writeValueAsString(user)));
+                context.write(new Text(user.getEntityName().name()), new Text(mapper.writeValueAsString(user)));
             }
         } catch (Exception e) {
             e.printStackTrace();

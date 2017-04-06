@@ -33,19 +33,26 @@ public class VKUser implements SocialUser {
 
     @Override
     @JsonIgnore
-    public List<String> getNames() {
-        List<String> strings = Arrays.asList(livejournal, instagram, twitter, facebookName, skype,
-                domain, firstName + " " + lastName, nickname);
+    public List<SocialName> getNames() {
+        List<SocialName> strings = Arrays.asList(
+                new SocialName("domain", domain, getEntityName()),
+                new SocialName("fullName", firstName + " " + lastName, getEntityName()),
+                new SocialName("skype", skype, getEntityName()),
+                new SocialName("facebook", facebookName, getEntityName()),
+                new SocialName("twitter", twitter, getEntityName()),
+                new SocialName("instagram", instagram, getEntityName()),
+                new SocialName("livejournal", livejournal, getEntityName()),
+                new SocialName("nickname", nickname, getEntityName())
+        );
         return strings.stream()
-                .filter(s -> s != null)
-                .distinct()
+                .filter(s -> s.value != null)
                 .collect(toList());
     }
 
     @Override
     @JsonIgnore
-    public String getEntityName() {
-        return "VK";
+    public SocialNetwork getEntityName() {
+        return SocialNetwork.VK;
     }
 
     @JsonIgnore

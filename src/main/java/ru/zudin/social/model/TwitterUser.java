@@ -41,18 +41,22 @@ public class TwitterUser implements SocialUser {
 
     @Override
     @JsonIgnore
-    public List<String> getNames() {
-        List<String> strings = Arrays.asList(nickname, otherNickname, name, info);
+    public List<SocialName> getNames() {
+        List<SocialName> strings = Arrays.asList(
+                new SocialName("nickname", nickname, getEntityName()),
+                new SocialName("otherNickname", otherNickname, getEntityName()),
+                new SocialName("name", name, getEntityName()),
+                new SocialName("info", info, getEntityName())
+        );
         return strings.stream()
-                .filter(s -> s != null)
-                .distinct()
+                .filter(s -> s.value != null)
                 .collect(toList());
     }
 
     @Override
     @JsonIgnore
-    public String getEntityName() {
-        return "Twitter";
+    public SocialNetwork getEntityName() {
+        return SocialNetwork.Twitter;
     }
 
     @JsonIgnore
