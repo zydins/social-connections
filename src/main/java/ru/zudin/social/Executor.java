@@ -8,6 +8,8 @@ import ru.zudin.social.mr.matcher.HashMapper;
 import ru.zudin.social.mr.matcher.UserCollectReducer;
 import ru.zudin.social.mr.matcher.UserMatchReducer;
 import ru.zudin.social.mr.matcher.UserPairMapper;
+import ru.zudin.social.mr.social.FriendConnectionMapper;
+import ru.zudin.social.mr.social.UserConnectionFriendMapper;
 
 import java.util.Collections;
 
@@ -19,8 +21,8 @@ public class Executor {
 
     public static void main(String[] args) throws Exception {
         FileSystem fileSystem = FileSystem.get(new Configuration());
-        profileMatching(fileSystem);
-//        friendMatching(fileSystem);
+//        profileMatching(fileSystem);
+        friendMatching(fileSystem);
 
     }
 
@@ -37,16 +39,14 @@ public class Executor {
             }
         }
 
-//        ChainingJob job = ChainingJob.Builder.instance()
-//                .name("social_connections_2")
-//                .tempDir(tempPath.getName())
-//                .mapper(HashMapper.class)
-//                .reducer(UserMatchReducer.class)
-//                .mapper(UserPairMapper.class)
-//                .reducer(UserCollectReducer.class, Collections.singletonMap("-M", "true"))
-//                .build();
-//
-//        ToolRunner.run(new Configuration(), job, new String[]{"match", "friends"});
+        ChainingJob job = ChainingJob.Builder.instance()
+                .name("social_connections_2")
+                .tempDir(tempPath.getName())
+                .mapper(UserConnectionFriendMapper.class, Collections.singletonMap("-I", "KeyValueTextInputFormat"))
+                .mapper(FriendConnectionMapper.class, Collections.singletonMap("-I", "KeyValueTextInputFormat"))
+                .build();
+
+        ToolRunner.run(new Configuration(), job, new String[]{"match", "friends"});
     }
 
     private static void profileMatching(FileSystem fileSystem) throws Exception {
