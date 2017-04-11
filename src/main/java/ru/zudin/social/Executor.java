@@ -1,10 +1,7 @@
 package ru.zudin.social;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.LocatedFileStatus;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.RemoteIterator;
+import org.apache.hadoop.fs.*;
 import org.apache.hadoop.util.ToolRunner;
 import ru.zudin.ChainingJob;
 import ru.zudin.social.mr.HashMapper;
@@ -12,6 +9,7 @@ import ru.zudin.social.mr.UserCollectReducer;
 import ru.zudin.social.mr.UserMatchReducer;
 import ru.zudin.social.mr.UserPairMapper;
 
+import java.io.IOException;
 import java.util.Collections;
 
 /**
@@ -23,15 +21,33 @@ public class Executor {
     public static void main(String[] args) throws Exception {
         FileSystem fileSystem = FileSystem.get(new Configuration());
         profileMatching(fileSystem);
+//        friendMatching(fileSystem);
+
+    }
+
+    private static void friendMatching(FileSystem fileSystem) throws IOException {
+        Path outputPath = new Path("output");
+        Path tempPath = new Path("temp");
+        fileSystem.delete(outputPath, true);
+        fileSystem.delete(tempPath, true);
 
 
     }
 
     private static void profileMatching(FileSystem fileSystem) throws Exception {
         Path outputPath = new Path("output");
-        fileSystem.delete(outputPath, true);
         Path tempPath = new Path("temp");
+        fileSystem.delete(outputPath, true);
         fileSystem.delete(tempPath, true);
+        Path matchPath = new Path("match");
+        fileSystem.delete(matchPath, true);
+        RemoteIterator<FileStatus> iterator2 = fileSystem.listStatusIterator(outputPath.getParent());
+        while (iterator2.hasNext()) {
+            FileStatus next = iterator2.next();
+            if (next.isDirectory() && next.getPath().getName().startsWith("temp")) {
+                fileSystem.delete(next.getPath(), true);
+            }
+        }
 
         ChainingJob job = ChainingJob.Builder.instance()
                 .name("social_connections")
@@ -54,8 +70,16 @@ public class Executor {
                 fileSystem.rename(path, new Path("match/" + newName));
             }
         }
-        fileSystem.delete(outputPath, true);
-        fileSystem.delete(tempPath, true);
+
+//        iterator = fileSystem.listFiles(matchPath, true);
+//        while (iterator.hasNext()) {
+//            LocatedFileStatus next = iterator.next();
+//            Path path = next.getPath();
+//            String name = path.getName();
+//            if (name.endsWith("crc")) {
+//                fileSystem.delete(path, true);
+//            }
+//        }
     }
 
 }
