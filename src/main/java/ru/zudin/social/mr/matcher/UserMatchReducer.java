@@ -12,6 +12,7 @@ import ru.zudin.social.util.ParseHelper;
 import ru.zudin.social.util.ProbabilityHelper;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -85,8 +86,8 @@ public class UserMatchReducer extends Reducer<LongWritable, Text, Text, Text> {
                             if (probability > 0.0) {
                                 String contextKey = tokenizedUser.user.getGlobalId() + "\t" +
                                         otherUser.user.getGlobalId();
-                                String contextValue = String.format("%.4f", probability);
-                                context.write(new Text(contextKey), new Text(contextValue));
+                                BigDecimal decimal = new BigDecimal(probability).setScale(4, BigDecimal.ROUND_HALF_UP);
+                                context.write(new Text(contextKey), new Text(decimal.toString()));
 //                                multipleOutputs.write(new Text(contextKey), new Text(contextValue), tokenizedUser.user.getGlobalId());
 //                                multipleOutputs.write(new Text(contextKey), new Text(contextValue), otherUser.user.getGlobalId());
                             }

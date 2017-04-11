@@ -32,7 +32,9 @@ public class ProbabilityHelper {
     }
 
     public double getProbability(SocialName name1, SocialName name2) {
-        Object o = map.get(name1, name2);
+        SocialName first = name1.network == VK ? name1 : name2;
+        SocialName second = name1.network == Twitter ? name1 : name2;
+        Object o = map.get(first, second);
         if (o == null) {
             return 0.2;
         } else {
