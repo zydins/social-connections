@@ -8,8 +8,7 @@ import ru.zudin.social.mr.matcher.HashMapper;
 import ru.zudin.social.mr.matcher.UserCollectReducer;
 import ru.zudin.social.mr.matcher.UserMatchReducer;
 import ru.zudin.social.mr.matcher.UserPairMapper;
-import ru.zudin.social.mr.social.FriendConnectionMapper;
-import ru.zudin.social.mr.social.UserConnectionFriendMapper;
+import ru.zudin.social.mr.social.*;
 
 import java.util.Collections;
 
@@ -44,6 +43,9 @@ public class Executor {
                 .tempDir(tempPath.getName())
                 .mapper(UserConnectionFriendMapper.class, Collections.singletonMap("-I", "KeyValueTextInputFormat"))
                 .mapper(FriendConnectionMapper.class, Collections.singletonMap("-I", "KeyValueTextInputFormat"))
+                .mapper(FriendMatchFactorMapper.class, Collections.singletonMap("-I", "KeyValueTextInputFormat"))
+                .reducer(MaxFactorReducer.class)
+                .reducer(SocialFactorReducer.class, Collections.singletonMap("-I", "KeyValueTextInputFormat"))
                 .build();
 
         ToolRunner.run(new Configuration(), job, new String[]{"match", "friends"});
