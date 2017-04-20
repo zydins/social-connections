@@ -26,7 +26,10 @@ public class SocialFactorReducer extends Reducer<Text, Text, Text, Text> {
         });
         BigDecimal sum = factors.values().stream()
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal factor = sum.divide(new BigDecimal(factors.size()), 2, BigDecimal.ROUND_UP);
+
+        BigDecimal temp = new BigDecimal("10000").divide(new BigDecimal(factors.size()), 2, BigDecimal.ROUND_UP).multiply(sum);
+        BigDecimal factor = new BigDecimal(Math.pow(temp.doubleValue(), 0.5))
+                .divide(new BigDecimal("100"), 2, BigDecimal.ROUND_UP).setScale(2, BigDecimal.ROUND_UP);
         context.write(new Text(userId), new Text(connectionId + "\t" + factor));
     }
 }
