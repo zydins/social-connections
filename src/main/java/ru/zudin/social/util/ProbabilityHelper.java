@@ -23,6 +23,9 @@ public class ProbabilityHelper {
         map.put(new SocialName("instagram", VK), new SocialName("nickname", Twitter), 0.7);
         map.put(new SocialName("livejournal", VK), new SocialName("nickname", Twitter), 0.7);
 
+        map.put(new SocialName("fullName", VK), new SocialName("name", Twitter), 0.8);
+        map.put(new SocialName("fullName", VK), new SocialName("info", Twitter), 0.8);
+
         map.put(new SocialName("domain", VK), new SocialName("otherNickname", Twitter), 0.8);
         map.put(new SocialName("skype", VK), new SocialName("otherNickname", Twitter), 0.7);
         map.put(new SocialName("facebook", VK), new SocialName("otherNickname", Twitter), 0.7);
@@ -36,7 +39,7 @@ public class ProbabilityHelper {
         SocialName second = name1.network == Twitter ? name1 : name2;
         Object o = map.get(first, second);
         if (o == null) {
-            return 0.2;
+            return 0.4;
         } else {
             return (Double) o;
         }

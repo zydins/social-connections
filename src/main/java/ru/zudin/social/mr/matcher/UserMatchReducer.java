@@ -75,6 +75,7 @@ public class UserMatchReducer extends Reducer<LongWritable, Text, Text, Text> {
                                             if (secondStrings.contains(string)) {
                                                 double newProb = ((double) string.length() / name.value.length()) *
                                                         ((double) string.length() / name2.value.length());
+                                                newProb *= probabilityHelper.getProbability(name, name2);
                                                 if (newProb > probability) {
                                                     probability = newProb;
                                                 }

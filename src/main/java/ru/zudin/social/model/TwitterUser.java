@@ -28,9 +28,9 @@ public class TwitterUser implements SocialUser {
         }
         try {
             URL url = new URL(user.url);
-            user.otherNickname = url.getPath().replace("/", "");
-        } catch (Exception e) {
-            return;
+            user.otherNickname = url.getPath().replace("/", ""); //TODO: add host
+        } catch (Exception ignored) {
+
         }
     }
 
