@@ -7,10 +7,13 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import ru.zudin.social.model.VKUser;
-import twitter4j.*;
+import twitter4j.TwitterException;
 
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,34 +27,39 @@ public class VKParser implements SocialParser {
     private final static String DEFAULT_URL = "https://api.vk.com/method/{METHOD_NAME}?{PARAMETERS}";
 
     public List<VKUser> parse(long userId, int depth) throws IOException {
-        String url = changeUrl(userId);
+        List<Map<String, Object>> maps = executeAndGet(getUserUrl(userId));
+        if (maps == null || maps.size() != 1) {
+            throw new IOException();
+        }
+        VKUser rootUser = mapToUser(maps.get(0));
+        String url = friendsGetUrl(userId);
         List<Map<String, Object>> result = executeAndGet(url);
         List<VKUser> users = result.stream()
                 .map(this::mapToUser)
                 .collect(Collectors.toList());
 
         if (depth > 0) {
-            users.stream()
+            List<VKUser> collect = users.stream()
                     .map(u -> u.userId)
                     .map(id -> {
                         try {
                             return parse(id, depth - 1);
                         } catch (IOException e) {
-                            return null;
+                            return Collections.<VKUser>emptyList();
                         }
                     })
-                    .filter(l -> l != null)
                     .flatMap(Collection::stream)
-                    .forEach(users::add);
+                    .collect(Collectors.toList());
+            users.addAll(collect);
         }
-
+        users.add(rootUser);
         return users;
     }
 
     private VKUser mapToUser(Map<String, Object> map) {
         VKUser user = new VKUser();
         //required
-        user.userId = (Integer) map.get("user_id");
+        user.userId = (Integer) map.getOrDefault("uid", map.getOrDefault("id", map.getOrDefault("user_id", null)));
         user.domain = (String) map.get("domain");
         user.firstName = (String) map.get("first_name");
         user.lastName = (String) map.get("last_name");
@@ -90,7 +98,13 @@ public class VKParser implements SocialParser {
         return result;
     }
 
-    private String changeUrl(long userId) {
+    private String getUserUrl(long userId) {
+        String param = "user_ids="+userId+"&fields=domain,connections,nickname";
+        String url = DEFAULT_URL.replace("{METHOD_NAME}", "users.get");
+        return url.replace("{PARAMETERS}", param);
+    }
+
+    private String friendsGetUrl(long userId) {
         String param = "user_id="+userId+"&fields=domain,connections,nickname";
         String url = DEFAULT_URL.replace("{METHOD_NAME}", "friends.get");
         return url.replace("{PARAMETERS}", param);
@@ -98,10 +112,20 @@ public class VKParser implements SocialParser {
 
     public static void main(String[] args) throws IOException, TwitterException {
         VKParser vkParser = new VKParser();
-        List<VKUser> parse = vkParser.parse(32030584, 0);
+        List<VKUser> parse = vkParser.parse(32030584, 1);
         Map<Boolean, List<VKUser>> collect = parse.stream()
                 .collect(Collectors.groupingBy(u -> u.twitter != null));
         System.out.println(collect);
+
+        PrintWriter pw = new PrintWriter(new FileWriter("input/vk.txt"));
+        ObjectMapper mapper = new ObjectMapper();
+        for (VKUser user : parse) {
+            pw.write(user.getGlobalId() + "\t" + user.getEntityName() + "\t" + mapper.writeValueAsString(user) + "\n");
+        }
+
+        pw.close();
+        System.out.println(1);
+
     }
 
 }

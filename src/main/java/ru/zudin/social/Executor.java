@@ -21,12 +21,12 @@ public class Executor {
     public static void main(String[] args) throws Exception {
         FileSystem fileSystem = FileSystem.get(new Configuration());
 //        profileMatching(fileSystem);
-        friendMatching(fileSystem);
+        socialMatching(fileSystem);
 
     }
 
-    private static void friendMatching(FileSystem fileSystem) throws Exception {
-        Path outputPath = new Path("friends");
+    private static void socialMatching(FileSystem fileSystem) throws Exception {
+        Path outputPath = new Path("social");
         Path tempPath = new Path("temp");
         fileSystem.delete(outputPath, true);
         fileSystem.delete(tempPath, true);
