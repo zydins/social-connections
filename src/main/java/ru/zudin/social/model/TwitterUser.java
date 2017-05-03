@@ -3,7 +3,6 @@ package ru.zudin.social.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
 
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,8 +26,8 @@ public class TwitterUser implements SocialUser {
             return;
         }
         try {
-            URL url = new URL(user.url);
-            user.otherNickname = url.getPath().replace("/", ""); //TODO: add host
+            String[] split = user.url.split("/");
+            user.otherNickname = split[split.length - 1]; //TODO: add host
         } catch (Exception ignored) {
 
         }

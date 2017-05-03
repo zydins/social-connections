@@ -25,6 +25,7 @@ import static java.util.stream.Collectors.toList;
  */
 public class UserMatchReducer extends Reducer<LongWritable, Text, Text, Text> {
 
+    public static final double THRESHOLD = 0.4;
     private final ParseHelper parseHelper;
     private final ProbabilityHelper probabilityHelper;
 
@@ -84,7 +85,7 @@ public class UserMatchReducer extends Reducer<LongWritable, Text, Text, Text> {
                                     }
                                 }
                             }
-                            if (probability > 0.0) {
+                            if (probability > THRESHOLD) {
                                 String contextKey = tokenizedUser.user.getGlobalId() + "\t" +
                                         otherUser.user.getGlobalId();
                                 BigDecimal decimal = new BigDecimal(probability).setScale(4, BigDecimal.ROUND_HALF_UP);
