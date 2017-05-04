@@ -3,8 +3,7 @@ package ru.zudin.social.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -20,6 +19,8 @@ public class TwitterUser implements SocialUser {
     public String info;
     public String url;
     public String otherNickname;
+    @JsonIgnore
+    public Set<TwitterUser> friends = new HashSet<>();
 
     public static void parseOtherNickname(TwitterUser user) {
         if (StringUtils.isBlank(user.url)) {
@@ -36,6 +37,10 @@ public class TwitterUser implements SocialUser {
     @Override
     public String getUserId() {
         return Long.toString(userId);
+    }
+
+    public void addFriends(Collection<TwitterUser> users) {
+        friends.addAll(users);
     }
 
     @Override

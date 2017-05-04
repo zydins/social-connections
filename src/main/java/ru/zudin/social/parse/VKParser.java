@@ -37,13 +37,17 @@ public class VKParser implements SocialParser {
         List<VKUser> users = result.stream()
                 .map(this::mapToUser)
                 .collect(Collectors.toList());
+        rootUser.addFriends(users);
+        users.forEach(u -> u.addFriends(Collections.singletonList(rootUser)));
 
         if (depth > 0) {
             List<VKUser> collect = users.stream()
-                    .map(u -> u.userId)
-                    .map(id -> {
+                    .map(u -> {
                         try {
-                            return parse(id, depth - 1);
+                            List<VKUser> parse = parse(u.userId, depth - 1);
+                            u.addFriends(parse);
+                            parse.forEach(u2 -> u2.addFriends(Collections.singletonList(u)));
+                            return parse;
                         } catch (IOException e) {
                             return Collections.<VKUser>emptyList();
                         }
@@ -117,13 +121,13 @@ public class VKParser implements SocialParser {
                 .collect(Collectors.groupingBy(u -> u.twitter != null));
         System.out.println(collect);
 
-        PrintWriter pw = new PrintWriter(new FileWriter("input/vk.txt"));
-        ObjectMapper mapper = new ObjectMapper();
-        for (VKUser user : parse) {
-            pw.write(user.getGlobalId() + "\t" + user.getEntityName() + "\t" + mapper.writeValueAsString(user) + "\n");
+        for (VKUser vkUser : parse) {
+            PrintWriter pw = new PrintWriter(new FileWriter("input/friends/friends_" + vkUser.getGlobalId() + ".txt"));
+            for (VKUser user : vkUser.friends) {
+                pw.write(vkUser.getGlobalId() + "\t" + user.getGlobalId() + "\n");
+            }
+            pw.close();
         }
-
-        pw.close();
         System.out.println(1);
 
     }

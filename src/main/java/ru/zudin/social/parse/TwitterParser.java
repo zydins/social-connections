@@ -3,6 +3,7 @@ package ru.zudin.social.parse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.apache.commons.lang3.time.DateUtils;
 import ru.zudin.social.model.TwitterUser;
 import twitter4j.*;
 
@@ -13,6 +14,8 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -24,6 +27,9 @@ import java.util.stream.Collectors;
 public class TwitterParser implements SocialParser {
 
     private final Twitter twitter;
+
+    private int count = 0;
+    private Date date = null;
 
     public TwitterParser() {
         this.twitter = TwitterFactory.getSingleton();
@@ -42,12 +48,17 @@ public class TwitterParser implements SocialParser {
             List<TwitterUser> users = following.stream()
                     .filter(u -> followersIds.contains(u.userId))
                     .collect(Collectors.toList());
+            rootUser.addFriends(users);
+            users.forEach(u -> u.addFriends(Collections.singletonList(rootUser)));
+            System.out.println("Found " + users.size() + " for user " + rootUser.nickname);
             if (depth > 0) {
                 users.stream()
-                        .map(u -> u.userId)
-                        .map(id -> {
+                        .map(u -> {
                             try {
-                                return parse(id, depth - 1);
+                                List<TwitterUser> parse = parse(u.userId, depth - 1);
+                                u.addFriends(parse);
+                                parse.forEach(u2 -> u2.addFriends(Collections.singletonList(u)));
+                                return parse;
                             } catch (IOException e) {
                                 return null;
                             }
@@ -77,6 +88,15 @@ public class TwitterParser implements SocialParser {
     private BiFunction<Long, Long, PagableResponseList<User>> getSafeFollowing() {
         return (l1, l2) -> {
             try {
+                if (date == null) {
+                    date = DateUtils.addMinutes(new Date(), 15);
+                }
+                if (count++ == 15) {
+                    long l = date.getTime() - new Date().getTime();
+                    System.out.println("Stop execution for " + TimeUnit.MILLISECONDS.toMinutes(l));
+                    LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(l));
+                    count = 0;
+                }
                 return twitter.friendsFollowers().getFriendsList(l1, l2);
             } catch (TwitterException e) {
                 System.out.println(e);
@@ -161,7 +181,28 @@ public class TwitterParser implements SocialParser {
     }
 
     public static void main(String[] args) throws TwitterException, IOException {
-        parseUsers();
+//        parseUsers();
+        main2();
+    }
+
+    private static void main2() {
+        try {
+            TwitterParser twitterParser = new TwitterParser();
+            List<TwitterUser> parse = twitterParser.parse(223807748, 2);
+            System.out.println(parse.size());
+
+            for (TwitterUser user : parse) {
+                PrintWriter pw = new PrintWriter(new FileWriter("input/friends/friends_" + user.getGlobalId() + ".txt"));
+                for (TwitterUser friend : user.friends) {
+                    pw.write(user.getGlobalId() + "\t" + friend.getGlobalId() + "\n");
+                }
+                pw.close();
+            }
+            System.out.println(1);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void parseUsers() {

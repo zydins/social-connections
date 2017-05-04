@@ -2,8 +2,7 @@ package ru.zudin.social.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -25,6 +24,8 @@ public class VKUser implements SocialUser {
     public String twitter;
     public String instagram;
     public String livejournal;
+    @JsonIgnore
+    public Set<VKUser> friends = new HashSet<>();
 
     @Override
     public String getUserId() {
@@ -47,6 +48,10 @@ public class VKUser implements SocialUser {
         return strings.stream()
                 .filter(s -> s.value != null)
                 .collect(toList());
+    }
+
+    public void addFriends(Collection<VKUser> users) {
+        friends.addAll(users);
     }
 
     @Override
