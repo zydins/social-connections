@@ -31,11 +31,14 @@ public class UserConnectionFriendMapper extends Mapper<Text, Text, Text, Text> {
             return;
         }
         String userId = key.toString();
-        if (!userId.equals("vk32030584")) {
-            logger.info("For test purposes only one user is processed, {} is skipped", userId);
+//        if (!userId.equals("vk32030584")) {
+//            logger.info("For test purposes only one user is processed, {} is skipped", userId);
+//            return;
+//        }
+        List<String> friends = userHelper.getFriends(userId);
+        if (friends.size() <= 1) {
             return;
         }
-        List<String> friends = userHelper.getFriends(userId);
         String connectionId = split[0];
         double matchFactor = Double.parseDouble(split[1]);
         for (String friendId : friends) {

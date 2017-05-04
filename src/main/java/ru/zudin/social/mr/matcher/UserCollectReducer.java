@@ -37,7 +37,7 @@ public class UserCollectReducer extends Reducer<Text, Text, Text, Text> {
             String[] split = text.split("\t");
             String otherKey = split[0].equals(key.toString()) ? split[1] : split[0];
             multipleOutputs.write(new Text(key.toString() + "\t" + otherKey + "\t" + split[2]), new Text(""), key.toString());
-            multipleOutputs.write(new Text(key.toString() + "\t" + otherKey + "\t" + split[2]), new Text(""), "total_res");
+//            multipleOutputs.write(new Text(key.toString() + "\t" + otherKey + "\t" + split[2]), new Text(""), "total_res");
         }
     }
 }

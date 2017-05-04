@@ -2,8 +2,7 @@ package ru.zudin.social.parse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import ru.zudin.social.model.TwitterUser;
 import twitter4j.*;
 
@@ -17,7 +16,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -27,9 +25,6 @@ import java.util.stream.Collectors;
 public class TwitterParser implements SocialParser {
 
     private final Twitter twitter;
-
-    private int count = 0;
-    private Date date = null;
 
     public TwitterParser() {
         this.twitter = TwitterFactory.getSingleton();
@@ -52,7 +47,8 @@ public class TwitterParser implements SocialParser {
             users.forEach(u -> u.addFriends(Collections.singletonList(rootUser)));
             System.out.println("Found " + users.size() + " for user " + rootUser.nickname);
             if (depth > 0) {
-                users.stream()
+                List<TwitterUser> newUsers = users.stream()
+                        .filter(u -> !u.nickname.equals("zudins"))
                         .map(u -> {
                             try {
                                 List<TwitterUser> parse = parse(u.userId, depth - 1);
@@ -65,7 +61,8 @@ public class TwitterParser implements SocialParser {
                         })
                         .filter(l -> l != null)
                         .flatMap(Collection::stream)
-                        .forEach(users::add);
+                        .collect(Collectors.toList());
+                users.addAll(newUsers);
             }
             users.add(rootUser);
             return users;
@@ -76,31 +73,44 @@ public class TwitterParser implements SocialParser {
 
     private BiFunction<Long, Long, PagableResponseList<User>> getSafeFollowers() {
         return (l1, l2) -> {
-            try {
-                return twitter.friendsFollowers().getFollowersList(l1, l2);
-            } catch (TwitterException e) {
-                System.out.println(e);
-                return null;
+            while (true) {
+                try {
+                    return twitter.friendsFollowers().getFollowersList(l1, l2, 200);
+                } catch (TwitterException e) {
+                    try {
+                        String seconds = ExceptionUtils.getStackTrace(e).split("secondsUntilReset=")[1].split("}")[0];
+                        System.out.println(new Date() + ": Stop execution for " + seconds);
+                        LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(Integer.parseInt(seconds)));
+                    } catch (Exception e2) {
+                        System.out.println(e2);
+                        return null;
+                    }
+                } catch (Exception e) {
+                    System.out.println(e);
+                    return null;
+                }
             }
         };
     }
 
     private BiFunction<Long, Long, PagableResponseList<User>> getSafeFollowing() {
         return (l1, l2) -> {
-            try {
-                if (date == null) {
-                    date = DateUtils.addMinutes(new Date(), 15);
+            while (true) {
+                try {
+                    return twitter.friendsFollowers().getFriendsList(l1, l2, 200);
+                } catch (TwitterException e) {
+                    try {
+                        String seconds = ExceptionUtils.getStackTrace(e).split("secondsUntilReset=")[1].split("}")[0];
+                        System.out.println(new Date() + ": Stop execution for " + seconds);
+                        LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(Integer.parseInt(seconds)));
+                    } catch (Exception e2) {
+                        System.out.println(e2);
+                        return null;
+                    }
+                } catch (Exception e) {
+                    System.out.println(e);
+                    return null;
                 }
-                if (count++ == 15) {
-                    long l = date.getTime() - new Date().getTime();
-                    System.out.println("Stop execution for " + TimeUnit.MILLISECONDS.toMinutes(l));
-                    LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(l));
-                    count = 0;
-                }
-                return twitter.friendsFollowers().getFriendsList(l1, l2);
-            } catch (TwitterException e) {
-                System.out.println(e);
-                return null;
             }
         };
     }
@@ -181,26 +191,35 @@ public class TwitterParser implements SocialParser {
     }
 
     public static void main(String[] args) throws TwitterException, IOException {
-//        parseUsers();
-        main2();
+        parseUsers();
+//        main2();
     }
 
     private static void main2() {
         try {
             TwitterParser twitterParser = new TwitterParser();
-            List<TwitterUser> parse = twitterParser.parse(223807748, 2);
+            Optional<Long> id = twitterParser.getId("zydins");
+
+            Collection<TwitterUser> parse = twitterParser.parse(id.get(), 1);
+            parse = new HashSet<>(parse);
             System.out.println(parse.size());
 
+            PrintWriter totpw = new PrintWriter(new FileWriter("input/twitter.txt"));
+            ObjectMapper mapper = new ObjectMapper();
             for (TwitterUser user : parse) {
                 PrintWriter pw = new PrintWriter(new FileWriter("input/friends/friends_" + user.getGlobalId() + ".txt"));
                 for (TwitterUser friend : user.friends) {
                     pw.write(user.getGlobalId() + "\t" + friend.getGlobalId() + "\n");
                 }
                 pw.close();
+                totpw.write(user.getGlobalId() + "\t" + user.getEntityName() + "\t" + mapper.writeValueAsString(user) + "\n");
             }
+            totpw.close();
             System.out.println(1);
 
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (TwitterException e) {
             e.printStackTrace();
         }
     }
@@ -254,28 +273,28 @@ public class TwitterParser implements SocialParser {
 //                    .collect(Collectors.toList());
 //            users.addAll(collect);
 
-            Map<String, TwitterUser> userNameMap = users.stream()
-                    .collect(Collectors.toMap(u -> u.nickname, Function.<TwitterUser>identity()));
+//            Map<String, TwitterUser> userNameMap = users.stream()
+//                    .collect(Collectors.toMap(u -> u.nickname, Function.<TwitterUser>identity()));
+//
+//            Sets.SetView<String> foundNames = Sets.intersection(userNameMap.keySet(), nicknameMap.keySet());
+//
+//            users = foundNames.stream()
+//                    .map(userNameMap::get)
+//                    .collect(Collectors.toSet());
+//            List<String> linesToProcess = foundNames.stream()
+//                    .map(nicknameMap::get)
+//                    .filter(n -> n != null)
+//                    .collect(Collectors.toList());
 
-            Sets.SetView<String> foundNames = Sets.intersection(userNameMap.keySet(), nicknameMap.keySet());
+//            List<String> toInsert = linesToProcess.stream()
+//                    .map(l -> l.replaceAll("\"twitter\":.+,", "\"twitter\":null,"))
+//                    .collect(Collectors.toList());
 
-            users = foundNames.stream()
-                    .map(userNameMap::get)
-                    .collect(Collectors.toSet());
-            List<String> linesToProcess = foundNames.stream()
-                    .map(nicknameMap::get)
-                    .filter(n -> n != null)
-                    .collect(Collectors.toList());
-
-            List<String> toInsert = linesToProcess.stream()
-                    .map(l -> l.replaceAll("\"twitter\":.+,", "\"twitter\":null,"))
-                    .collect(Collectors.toList());
-
-            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("input/test1.txt", true)));
+            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("input/twitter_mapped.txt", true)));
             ObjectMapper mapper = new ObjectMapper();
-            for (String s : toInsert) {
-                pw.write(s + "\n");
-            }
+//            for (String s : toInsert) {
+//                pw.write(s + "\n");
+//            }
             for (TwitterUser user : users) {
                 pw.write(user.getGlobalId() + "\t" + user.getEntityName() + "\t" + mapper.writeValueAsString(user) + "\n");
             }
