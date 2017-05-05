@@ -1,15 +1,17 @@
 package ru.zudin.social.util;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.ibm.icu.text.Transliterator;
+
+import java.util.*;
 
 /**
  * @author sergey
  * @since 02.06.16
  */
-public class HashUtils {
+public class StringUtil {
+
+    private static final Transliterator transliteratorRUEN = Transliterator.getInstance("Cyrillic-Latin");
+    private static final Transliterator transliteratorENRU = Transliterator.getInstance("Latin-Cyrillic");
 
     public static List<Integer> shinglingHash(String string) {
         int length = string.length();
@@ -48,6 +50,17 @@ public class HashUtils {
             shingles.addAll(shingling);
         }
         return shingles;
+    }
+
+    public static Optional<String> transliterate(String str) {
+        String res = transliteratorRUEN.transliterate(str);
+        if (res.equals(str)) {
+            res = transliteratorENRU.transliterate(str);
+            if (res.equals(str)) {
+                return Optional.empty();
+            }
+        }
+        return Optional.of(res);
     }
 
 }

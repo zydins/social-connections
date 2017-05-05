@@ -7,9 +7,9 @@ import ru.zudin.social.model.SocialName;
 import ru.zudin.social.model.SocialNetwork;
 import ru.zudin.social.model.SocialUser;
 import ru.zudin.social.model.TokenizedUser;
-import ru.zudin.social.util.HashUtils;
 import ru.zudin.social.util.ParseHelper;
 import ru.zudin.social.util.ProbabilityHelper;
+import ru.zudin.social.util.StringUtil;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -103,7 +103,7 @@ public class UserMatchReducer extends Reducer<LongWritable, Text, Text, Text> {
 
     private TokenizedUser getTokenized(SocialUser u) {
         Map<SocialName, Set<String>> collect = u.getNames().stream()
-                .collect(Collectors.toMap(Function.<SocialName>identity(), s -> HashUtils.continuousShingling(s.value, 6)));
+                .collect(Collectors.toMap(Function.<SocialName>identity(), s -> StringUtil.continuousShingling(s.value.toLowerCase(), 6)));
         return new TokenizedUser(u, collect);
     }
 }

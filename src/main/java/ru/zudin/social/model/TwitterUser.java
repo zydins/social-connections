@@ -2,6 +2,7 @@ package ru.zudin.social.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
+import ru.zudin.social.util.StringUtil;
 
 import java.util.*;
 
@@ -52,6 +53,10 @@ public class TwitterUser implements SocialUser {
                 new SocialName("name", name, getEntityName()),
                 new SocialName("info", info, getEntityName())
         );
+        Optional<String> optional = StringUtil.transliterate(name);
+        if (optional.isPresent()) {
+            strings.add(new SocialName("nameRev", optional.get(), getEntityName()));
+        }
         return strings.stream()
                 .filter(s -> s.value != null)
                 .collect(toList());

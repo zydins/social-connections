@@ -1,6 +1,7 @@
 package ru.zudin.social.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import ru.zudin.social.util.StringUtil;
 
 import java.util.*;
 
@@ -35,9 +36,10 @@ public class VKUser implements SocialUser {
     @Override
     @JsonIgnore
     public List<SocialName> getNames() {
+        String fullName = firstName + " " + lastName;
         List<SocialName> strings = Arrays.asList(
                 new SocialName("domain", domain, getEntityName()),
-                new SocialName("fullName", firstName + " " + lastName, getEntityName()),
+                new SocialName("fullName", fullName, getEntityName()),
                 new SocialName("skype", skype, getEntityName()),
                 new SocialName("facebook", facebookName, getEntityName()),
                 new SocialName("twitter", twitter, getEntityName()),
@@ -45,6 +47,10 @@ public class VKUser implements SocialUser {
                 new SocialName("livejournal", livejournal, getEntityName()),
                 new SocialName("nickname", nickname, getEntityName())
         );
+        Optional<String> optional = StringUtil.transliterate(fullName);
+        if (optional.isPresent()) {
+            strings.add(new SocialName("fullNameRev", optional.get(), getEntityName()));
+        }
         return strings.stream()
                 .filter(s -> s.value != null)
                 .collect(toList());

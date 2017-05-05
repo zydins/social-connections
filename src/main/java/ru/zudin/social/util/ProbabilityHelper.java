@@ -24,7 +24,11 @@ public class ProbabilityHelper {
         map.put(new SocialName("livejournal", VK), new SocialName("nickname", Twitter), 0.7);
 
         map.put(new SocialName("fullName", VK), new SocialName("name", Twitter), 0.8);
-        map.put(new SocialName("fullName", VK), new SocialName("info", Twitter), 0.8);
+        map.put(new SocialName("fullName", VK), new SocialName("nameRev", Twitter), 0.8);
+        map.put(new SocialName("fullNameRev", VK), new SocialName("name", Twitter), 0.8);
+        map.put(new SocialName("fullNameRev", VK), new SocialName("nameRev", Twitter), 0.8);
+        map.put(new SocialName("fullName", VK), new SocialName("info", Twitter), 0.7);
+        map.put(new SocialName("fullNameRev", VK), new SocialName("info", Twitter), 0.7);
 
         map.put(new SocialName("domain", VK), new SocialName("otherNickname", Twitter), 0.8);
         map.put(new SocialName("skype", VK), new SocialName("otherNickname", Twitter), 0.7);

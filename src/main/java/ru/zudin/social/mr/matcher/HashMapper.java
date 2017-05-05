@@ -4,8 +4,8 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import ru.zudin.social.model.SocialUser;
-import ru.zudin.social.util.HashUtils;
 import ru.zudin.social.util.ParseHelper;
+import ru.zudin.social.util.StringUtil;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -34,7 +34,8 @@ public class HashMapper extends Mapper<LongWritable, Text, LongWritable, Text> {
         }
         List<Integer> hashes = user.getNames().stream()
                 .map(n -> n.value)
-                .map(HashUtils::shinglingHash)
+                .map(String::toLowerCase)
+                .map(StringUtil::shinglingHash)
                 .flatMap(Collection::stream)
                 .collect(toList());
         for (Integer hash : hashes) {

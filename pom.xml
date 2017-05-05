@@ -54,6 +54,11 @@
             <artifactId>chaining-job</artifactId>
             <version>0.2.5</version>
         </dependency>
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+            <version>59.1</version>
+        </dependency>
     </dependencies>
 
     <build>
