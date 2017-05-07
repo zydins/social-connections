@@ -14,6 +14,8 @@ import java.util.Map;
  */
 public class SocialFactorReducer extends Reducer<Text, Text, Text, Text> {
 
+    private final BigDecimal THRESHOLD = new BigDecimal("0.4");
+
     @Override
     protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
         String[] keySplit = key.toString().split(";");
@@ -30,6 +32,8 @@ public class SocialFactorReducer extends Reducer<Text, Text, Text, Text> {
         BigDecimal temp = new BigDecimal("10000").divide(new BigDecimal(factors.size()), 2, BigDecimal.ROUND_UP).multiply(sum);
         BigDecimal factor = new BigDecimal(Math.pow(temp.doubleValue(), 0.5))
                 .divide(new BigDecimal("100"), 2, BigDecimal.ROUND_UP).setScale(2, BigDecimal.ROUND_UP);
-        context.write(new Text(userId), new Text(connectionId + "\t" + factor));
+        if (factor.compareTo(THRESHOLD) > -1) {
+            context.write(new Text(userId), new Text(connectionId + "\t" + factor));
+        }
     }
 }
