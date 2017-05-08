@@ -37,7 +37,7 @@ public class VKUser implements SocialUser {
     @JsonIgnore
     public List<SocialName> getNames() {
         String fullName = firstName + " " + lastName;
-        List<SocialName> strings = Arrays.asList(
+        List<SocialName> strings = new ArrayList<>(Arrays.asList(
                 new SocialName("domain", domain, getEntityName()),
                 new SocialName("fullName", fullName, getEntityName()),
                 new SocialName("skype", skype, getEntityName()),
@@ -46,7 +46,7 @@ public class VKUser implements SocialUser {
                 new SocialName("instagram", instagram, getEntityName()),
                 new SocialName("livejournal", livejournal, getEntityName()),
                 new SocialName("nickname", nickname, getEntityName())
-        );
+        ));
         Optional<String> optional = StringUtil.transliterate(fullName);
         if (optional.isPresent()) {
             strings.add(new SocialName("fullNameRev", optional.get(), getEntityName()));

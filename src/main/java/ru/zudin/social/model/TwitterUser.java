@@ -47,12 +47,12 @@ public class TwitterUser implements SocialUser {
     @Override
     @JsonIgnore
     public List<SocialName> getNames() {
-        List<SocialName> strings = Arrays.asList(
+        List<SocialName> strings = new ArrayList<>(Arrays.asList(
                 new SocialName("nickname", nickname, getEntityName()),
                 new SocialName("otherNickname", otherNickname, getEntityName()),
                 new SocialName("name", name, getEntityName()),
                 new SocialName("info", info, getEntityName())
-        );
+        ));
         Optional<String> optional = StringUtil.transliterate(name);
         if (optional.isPresent()) {
             strings.add(new SocialName("nameRev", optional.get(), getEntityName()));

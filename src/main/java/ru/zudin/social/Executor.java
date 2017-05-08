@@ -20,13 +20,13 @@ public class Executor {
 
     public static void main(String[] args) throws Exception {
         FileSystem fileSystem = FileSystem.get(new Configuration());
-        profileMatching(fileSystem);
-//        socialMatching(fileSystem);
+        //profileMatching(fileSystem);
+        socialMatching(fileSystem);
 
     }
 
     private static void socialMatching(FileSystem fileSystem) throws Exception {
-        Path outputPath = new Path("social");
+        Path outputPath = new Path("friends");
         Path tempPath = new Path("temp");
         fileSystem.delete(outputPath, true);
         fileSystem.delete(tempPath, true);
@@ -76,7 +76,7 @@ public class Executor {
                 .reducer(UserCollectReducer.class, Collections.singletonMap("-M", "true"))
                 .build();
 
-        ToolRunner.run(new Configuration(), job, new String[]{"input/test2.txt", "output"});
+        ToolRunner.run(new Configuration(), job, new String[]{"input/test4.txt", "output"});
         RemoteIterator<LocatedFileStatus> iterator = fileSystem.listFiles(outputPath, true);
         while (iterator.hasNext()) {
             LocatedFileStatus next = iterator.next();

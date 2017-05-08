@@ -39,7 +39,7 @@ public class UserHelper {
 
     public List<String> getFriends(String userId) {
         try {
-            Path pt = new Path("input/friends_" + userId + ".txt");
+            Path pt = new Path("input/friends/friends_" + userId + ".txt");
             FileSystem fs = FileSystem.get(new Configuration());
             BufferedReader br = new BufferedReader(new InputStreamReader(fs.open(pt)));
             List<String> friends = new ArrayList<>();
