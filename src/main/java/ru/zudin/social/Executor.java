@@ -20,7 +20,7 @@ public class Executor {
 
     public static void main(String[] args) throws Exception {
         FileSystem fileSystem = FileSystem.get(new Configuration());
-        //profileMatching(fileSystem);
+        profileMatching(fileSystem);
         socialMatching(fileSystem);
 
     }
